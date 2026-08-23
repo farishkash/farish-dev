@@ -29,7 +29,6 @@ draft: true
 tags:
   - AI
 featured: false
-archive: false
 ---
 ```
 
@@ -71,7 +70,6 @@ A push to `main` triggers the GitHub validation build. Once the repository is co
 | `draft` | no | Defaults to `false`; drafts are never publicly generated |
 | `tags` | no | Topic navigation and related-post matching |
 | `featured` | no | Highlights a post on the Writing page |
-| `archive` | no | Marks older migrated material |
 
 ## URLs
 
