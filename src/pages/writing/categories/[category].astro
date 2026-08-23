@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { BLOG_CATEGORIES } from '../../../lib/categories';
+import { formatPostDate, newestFirst, postUrl, readingTime } from '../../../lib/blog';
+
+export function getStaticPaths() {
+  return BLOG_CATEGORIES.map((category) => ({
+    params: { category: category.slug },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props;
+const posts = (await getCollection('blog', ({ data }) => !data.draft && data.category === category.name)).sort(newestFirst);
+---
+
+<BaseLayout
+  title={`${category.name} — Writing`}
+  description={`${category.description} Posts by Farish Kashefinejad.`}
+>
+  <section class="page blog-index category-page">
+    <a class="back-link" href="/writing">← All writing</a>
+    <p class="eyebrow">Category</p>
+    <h1>{category.name}</h1>
+    <p class="lede">{category.description}</p>
+
+    <section class="section category-posts">
+      {posts.length > 0 ? (
+        <div class="post-list">
+          {posts.map((post) => (
+            <a class="post-card" href={postUrl(post)}>
+              <div>
+                <div class="post-kicker">
+                  <span>{formatPostDate(post.data.published)}</span>
+                  <span>·</span>
+                  <span>{readingTime(post.body)} min read</span>
+                </div>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.description}</p>
+                {post.data.tags.length > 0 && <span class="post-tags">{post.data.tags.join(' · ')}</span>}
+              </div>
+              <span class="arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="empty-category">
+          <h2>Nothing here yet.</h2>
+          <p>This is one of the areas I plan to write about, but I haven’t published anything in this category yet.</p>
+          <a class="text-link" href="/writing">Browse all posts →</a>
+        </div>
+      )}
+    </section>
+  </section>
+</BaseLayout>
