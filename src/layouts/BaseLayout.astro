@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Farish Kashefinejad',
+  description = 'AI, data science, product strategy, enterprise enablement, and technical education.',
+} = Astro.props;
+
+const pageTitle = title === 'Farish Kashefinejad' ? title : `${title} | Farish Kashefinejad`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const year = new Date().getFullYear();
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/work', label: 'Work' },
+  { href: '/about', label: 'About' },
+  { href: '/writing', label: 'Writing' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0c1118" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="Farish Kashefinejad home">farish<span>.dev</span></a>
+        <nav aria-label="Primary navigation">
+          {nav.map((item) => (
+            <a class:list={[{ active: Astro.url.pathname === item.href || (item.href !== '/' && Astro.url.pathname.startsWith(item.href)) }]} href={item.href}>{item.label}</a>
+          ))}
+        </nav>
+      </header>
+      <main>
+        <slot />
+      </main>
+      <footer class="site-footer">
+        <p>© {year} Farish Kashefinejad</p>
+        <div>
+          <a href="https://github.com/farishkash" rel="me">GitHub</a>
+          <a href="https://www.linkedin.com/in/farishkash/" rel="me">LinkedIn</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
