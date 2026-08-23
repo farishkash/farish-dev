@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { BLOG_CATEGORIES } from '../../lib/categories';
 import { formatPostDate, newestFirst, postUrl, readingTime, tagSlug } from '../../lib/blog';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(newestFirst);
@@ -8,16 +9,25 @@ const featured = posts.filter((post) => post.data.featured);
 const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) => a.localeCompare(b));
 ---
 
-<BaseLayout title="Writing" description="Thoughts by Farish Kashefinejad on AI, software, technical education, EdTech, learning, and work.">
+<BaseLayout title="Writing" description="Thoughts by Farish Kashefinejad on AI, software, technical education, learning, and work.">
   <section class="page blog-index">
     <div class="blog-intro">
       <div>
         <p class="eyebrow">Writing</p>
         <h1>Thoughts, arguments, experiments, and things I’m still figuring out.</h1>
-        <p class="lede">Mostly AI, software, technical education, EdTech, work, and what happens when new technology meets the real world.</p>
+        <p class="lede">Mostly AI, software, technical education, work, and what happens when new technology meets the real world.</p>
       </div>
       <a class="rss-link" href="/rss.xml">RSS ↗</a>
     </div>
+
+    <nav class="category-nav" aria-label="Blog categories">
+      <p class="eyebrow">Browse by category</p>
+      <div class="tag-list">
+        {BLOG_CATEGORIES.map((category) => (
+          <a class="tag category-tag" href={`/writing/categories/${category.slug}`}>{category.name}</a>
+        ))}
+      </div>
+    </nav>
 
     {featured.length > 0 && (
       <section class="section blog-featured">
@@ -27,6 +37,8 @@ const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b
             <a class="post-card featured" href={postUrl(post)}>
               <div>
                 <div class="post-kicker">
+                  <span>{post.data.category}</span>
+                  <span>·</span>
                   <span>{formatPostDate(post.data.published)}</span>
                   <span>·</span>
                   <span>{readingTime(post.body)} min read</span>
@@ -59,6 +71,8 @@ const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b
           <a class="post-card" href={postUrl(post)}>
             <div>
               <div class="post-kicker">
+                <span>{post.data.category}</span>
+                <span>·</span>
                 <span>{formatPostDate(post.data.published)}</span>
                 <span>·</span>
                 <span>{readingTime(post.body)} min read</span>
