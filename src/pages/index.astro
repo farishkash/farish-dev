@@ -1,14 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BLOG_CATEGORIES } from '../lib/categories';
 import { formatPostDate, newestFirst, postUrl, readingTime } from '../lib/blog';
 
 const latestPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(newestFirst).slice(0, 3);
 ---
 
-<BaseLayout description="Farish Kashefinejad writes about AI, software, technical education, EdTech, learning, and the work of turning new technology into something useful.">
+<BaseLayout description="Farish Kashefinejad writes about AI, software, technical education, learning, and the work of turning new technology into something useful.">
   <section class="hero blog-hero">
-    <p class="eyebrow">AI · Software · EdTech · Work</p>
+    <p class="eyebrow">AI · Software · Education · Work</p>
     <h1>Thoughts on technology, learning, and what happens when the hype meets real work.</h1>
     <p class="lede">I’m Farish Kashefinejad. This is where I write about what I’m learning, questioning, building, and occasionally arguing about.</p>
     <div class="actions">
@@ -31,6 +32,8 @@ const latestPosts = (await getCollection('blog', ({ data }) => !data.draft)).sor
         <a class="post-card home-post-card" href={postUrl(post)}>
           <div>
             <div class="post-kicker">
+              <span>{post.data.category}</span>
+              <span>·</span>
               <span>{formatPostDate(post.data.published)}</span>
               <span>·</span>
               <span>{readingTime(post.body)} min read</span>
@@ -56,33 +59,21 @@ const latestPosts = (await getCollection('blog', ({ data }) => !data.draft)).sor
   <section class="section home-topics">
     <div class="section-heading home-section-heading">
       <div>
-        <p class="eyebrow">Topics</p>
+        <p class="eyebrow">Categories</p>
         <h2>Things I keep coming back to.</h2>
       </div>
-      <p>The subjects will wander, but most posts live somewhere around technology, learning, building, and what actually happens after the demo is over.</p>
+      <p>These are the broad lanes for the blog. Individual posts can still wander, and tags handle the more specific subjects underneath them.</p>
     </div>
 
     <div class="topic-grid">
-      <article class="topic-card">
-        <span class="topic-number">01</span>
-        <h3>AI in practice</h3>
-        <p>What works, what doesn’t, and where the gap between the pitch and reality starts to show.</p>
-      </article>
-      <article class="topic-card">
-        <span class="topic-number">02</span>
-        <h3>Software & building</h3>
-        <p>Tools, experiments, workflows, and the occasional thing I built because I wanted to see if I could.</p>
-      </article>
-      <article class="topic-card">
-        <span class="topic-number">03</span>
-        <h3>Technical education</h3>
-        <p>How people actually learn complicated technical subjects, especially while the technology keeps moving.</p>
-      </article>
-      <article class="topic-card">
-        <span class="topic-number">04</span>
-        <h3>EdTech & work</h3>
-        <p>Observations from working where technology, products, subject-matter expertise, and people collide.</p>
-      </article>
+      {BLOG_CATEGORIES.map((category, index) => (
+        <a class="topic-card" href={`/writing/categories/${category.slug}`}>
+          <span class="topic-number">{String(index + 1).padStart(2, '0')}</span>
+          <h3>{category.name}</h3>
+          <p>{category.description}</p>
+          <span class="topic-link">Browse posts →</span>
+        </a>
+      ))}
     </div>
   </section>
 
