@@ -40,7 +40,9 @@ nav a { color: var(--muted); text-decoration: none; font-weight: 650; font-size:
 nav a:hover, nav a.active { color: var(--text); }
 main { min-height: 70vh; }
 .hero { padding: 8rem 0 5rem; max-width: 980px; }
-.blog-hero h1 { max-width: 1050px; }
+.blog-hero { padding: 6.25rem 0 3.75rem; max-width: 1080px; }
+.blog-hero h1 { max-width: 1080px; font-size: clamp(3.15rem, 6.1vw, 5.35rem); }
+.blog-hero .lede { max-width: 720px; }
 .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .13em; font-size: .78rem; font-weight: 800; }
 h1, h2, h3 { line-height: 1.08; letter-spacing: -.035em; margin-top: 0; }
 h1 { font-size: clamp(3rem, 8vw, 6.5rem); max-width: 980px; margin-bottom: 1.5rem; }
@@ -53,8 +55,10 @@ h3 { font-size: 1.35rem; }
 .button:hover { transform: translateY(-1px); border-color: var(--accent); }
 .text-link { display: inline-block; margin-top: 1.5rem; color: var(--accent-strong); font-weight: 750; text-decoration: none; }
 .section { padding: 5rem 0; border-top: 1px solid rgba(255,255,255,.08); }
+.home-latest { padding-top: 3.75rem; }
 .section-heading { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 3rem; align-items: start; margin-bottom: 2.5rem; }
 .section-heading p { color: var(--muted); margin: 0; font-size: 1.05rem; }
+.home-section-heading { grid-template-columns: minmax(0, .9fr) minmax(320px, .8fr); }
 .blog-heading { align-items: end; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .card { padding: 1.5rem; border: 1px solid var(--line); border-radius: 1rem; background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)); }
@@ -91,6 +95,9 @@ h3 { font-size: 1.35rem; }
 .post-card h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); }
 .post-card p { max-width: 760px; margin: 0; color: var(--muted); }
 .post-card.featured { padding: 2.4rem; border: 1px solid var(--line); border-radius: 1rem; background: linear-gradient(180deg, rgba(127,224,195,.055), rgba(255,255,255,.012)); }
+.home-post-card { padding: 2.25rem 0; }
+.home-post-card h3 { font-size: clamp(1.55rem, 2.6vw, 2.15rem); }
+.home-post-card .arrow { margin-top: .2rem; }
 .post-kicker, .post-date, .post-tags { color: var(--muted); font-size: .86rem; }
 .post-kicker { display: flex; flex-wrap: wrap; gap: .45rem; }
 .post-tags { display: inline-block; margin-top: .85rem; color: var(--accent); }
@@ -111,6 +118,17 @@ h3 { font-size: 1.35rem; }
   font-weight: 700;
 }
 .tag:hover { color: var(--text); border-color: var(--accent); }
+
+.topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.topic-card { padding: 1.6rem; border: 1px solid var(--line); border-radius: 1rem; background: rgba(255,255,255,.018); }
+.topic-card h3 { margin: .65rem 0 .65rem; font-size: 1.5rem; }
+.topic-card p { margin: 0; color: var(--muted); max-width: 460px; }
+.topic-number { color: var(--accent); font-size: .78rem; font-weight: 800; letter-spacing: .1em; }
+.home-about { padding-bottom: 5.5rem; }
+.about-panel { display: grid; grid-template-columns: minmax(0, .9fr) minmax(320px, .8fr); gap: 4rem; align-items: start; padding: 2.75rem; border: 1px solid var(--line); border-radius: 1.25rem; background: linear-gradient(135deg, rgba(127,224,195,.055), rgba(255,255,255,.012)); }
+.about-panel h2 { margin-bottom: 0; max-width: 620px; }
+.about-panel-copy p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+.about-links { display: flex; flex-wrap: wrap; gap: 1.5rem; }
 
 .prose { color: #d8dee8; font-size: 1.08rem; }
 .prose p, .prose ul, .prose ol, .prose blockquote { margin: 1.25rem 0; }
@@ -140,11 +158,14 @@ h3 { font-size: 1.35rem; }
 @media (max-width: 760px) {
   .site-header { align-items: flex-start; padding: 1.25rem 0; flex-direction: column; gap: .85rem; }
   .hero { padding: 5.5rem 0 4rem; }
-  .section-heading, .grid-3, .list-item, .blog-intro { grid-template-columns: 1fr; }
+  .blog-hero { padding: 4.5rem 0 3rem; }
+  .blog-hero h1 { font-size: clamp(2.75rem, 13vw, 4.25rem); }
+  .section-heading, .grid-3, .list-item, .blog-intro, .home-section-heading, .topic-grid, .about-panel { grid-template-columns: 1fr; }
   .section-heading { gap: 1rem; }
   .list-item { gap: .35rem; }
   .tag-cloud { justify-content: flex-start; }
   .post-card { grid-template-columns: 1fr auto; gap: 1rem; }
   .post-card.featured { padding: 1.5rem; }
+  .about-panel { gap: 1.5rem; padding: 1.5rem; }
   .site-footer { flex-direction: column; gap: .5rem; }
 }
