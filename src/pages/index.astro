@@ -1,22 +1,55 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatPostDate, newestFirst, postUrl, readingTime } from '../lib/blog';
+
+const latestPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(newestFirst).slice(0, 3);
 ---
 
-<BaseLayout description="Farish Kashefinejad works at the intersection of AI, data science, product strategy, enterprise enablement, and technical education.">
-  <section class="hero">
-    <p class="eyebrow">AI · Data Science · Technical Education</p>
-    <h1>I turn complex technology into things people can actually use.</h1>
-    <p class="lede">I work across AI and data science, product and curriculum strategy, enterprise enablement, and technical education — translating fast-moving technology into practical products, programs, and learning experiences.</p>
+<BaseLayout description="Farish Kashefinejad writes about AI, software, technical education, EdTech, learning, and the work of turning new technology into something useful.">
+  <section class="hero blog-hero">
+    <p class="eyebrow">AI · Software · EdTech · Work</p>
+    <h1>Thoughts on technology, learning, and what happens when the hype meets real work.</h1>
+    <p class="lede">I’m Farish Kashefinejad. I work across AI, data science, product and curriculum strategy, and technical education. This is where I write down the things I’m learning, questioning, building, and occasionally arguing about.</p>
     <div class="actions">
-      <a class="button primary" href="/work">See my work</a>
-      <a class="button" href="https://www.linkedin.com/in/farishkash/">LinkedIn</a>
+      <a class="button primary" href="/writing">Read the blog</a>
+      <a class="button" href="/about">About me</a>
     </div>
   </section>
 
   <section class="section">
     <div class="section-heading">
       <div>
-        <p class="eyebrow">What I do</p>
+        <p class="eyebrow">Latest writing</p>
+        <h2>Recent thoughts</h2>
+      </div>
+      <p>No content treadmill here. I write when there’s something worth saying, whether that’s a practical lesson, an argument, a build log, or an idea I’m still working through.</p>
+    </div>
+
+    <div class="post-list home-posts">
+      {latestPosts.map((post) => (
+        <a class="post-card" href={postUrl(post)}>
+          <div>
+            <div class="post-kicker">
+              <span>{formatPostDate(post.data.published)}</span>
+              <span>·</span>
+              <span>{readingTime(post.body)} min read</span>
+            </div>
+            <h3>{post.data.title}</h3>
+            <p>{post.data.description}</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+
+    <a class="text-link" href="/writing">All writing →</a>
+  </section>
+
+  <section class="section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">What I work on</p>
         <h2>Strategy with enough technical depth to ship.</h2>
       </div>
       <p>My work tends to sit between engineers, subject-matter experts, product teams, customers, and learners. I’m most useful when the technology is complicated, the audience is demanding, and the answer needs to work outside a slide deck.</p>
@@ -37,16 +70,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <h3>Enterprise Enablement</h3>
         <p>Helping technical and business audiences move from “we should use AI” to useful workflows, capability, and adoption.</p>
       </article>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">Current focus</p>
-        <h2>Building for the AI transition.</h2>
-      </div>
-      <p>I’m especially interested in agentic AI, how AI changes technical work, and how organizations teach people to use powerful tools without reducing the subject to prompts and buzzwords.</p>
     </div>
   </section>
 </BaseLayout>
