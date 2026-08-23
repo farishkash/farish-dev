@@ -62,7 +62,6 @@ const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b
                 <span>{formatPostDate(post.data.published)}</span>
                 <span>·</span>
                 <span>{readingTime(post.body)} min read</span>
-                {post.data.archive && <><span>·</span><span>Archive</span></>}
               </div>
               <h3>{post.data.title}</h3>
               <p>{post.data.description}</p>
