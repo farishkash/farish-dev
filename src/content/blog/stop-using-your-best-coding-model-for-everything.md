@@ -9,7 +9,6 @@ tags:
   - Coding Agents
   - Developer Tools
 featured: true
-archive: false
 ---
 
 There’s an assumption I think a lot of us make when we start working with coding agents:
