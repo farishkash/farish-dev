@@ -1,18 +1,77 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatPostDate, newestFirst, postUrl, readingTime, tagSlug } from '../../lib/blog';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(newestFirst);
+const featured = posts.filter((post) => post.data.featured);
+const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) => a.localeCompare(b));
 ---
 
-<BaseLayout title="Writing" description="Writing by Farish Kashefinejad about AI, technical education, software, learning, and work.">
-  <section class="page page-narrow">
-    <p class="eyebrow">Writing</p>
-    <h1>Notes, ideas, and the occasional longer argument.</h1>
-    <p class="lede">The old site started as a place to write about EdTech, work, and code. The subjects have expanded, but the reason for keeping a site has not.</p>
-
-    <div class="section">
-      <a class="post-link" href="/writing/the-starting-point">
-        <h3>The Starting Point</h3>
-        <span>February 15, 2021 · Archive</span>
-      </a>
+<BaseLayout title="Writing" description="Thoughts by Farish Kashefinejad on AI, software, technical education, EdTech, learning, and work.">
+  <section class="page blog-index">
+    <div class="blog-intro">
+      <div>
+        <p class="eyebrow">Writing</p>
+        <h1>Thoughts, arguments, experiments, and things I’m still figuring out.</h1>
+        <p class="lede">Mostly AI, software, technical education, EdTech, work, and what happens when new technology meets the real world.</p>
+      </div>
+      <a class="rss-link" href="/rss.xml">RSS ↗</a>
     </div>
+
+    {featured.length > 0 && (
+      <section class="section blog-featured">
+        <p class="eyebrow">Featured</p>
+        <div class="post-list">
+          {featured.map((post) => (
+            <a class="post-card featured" href={postUrl(post)}>
+              <div>
+                <div class="post-kicker">
+                  <span>{formatPostDate(post.data.published)}</span>
+                  <span>·</span>
+                  <span>{readingTime(post.body)} min read</span>
+                </div>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.description}</p>
+              </div>
+              <span class="arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="section">
+      <div class="section-heading blog-heading">
+        <div>
+          <p class="eyebrow">All posts</p>
+          <h2>Latest writing</h2>
+        </div>
+        {allTags.length > 0 && (
+          <div class="tag-list tag-cloud" aria-label="Browse by tag">
+            {allTags.map((tag) => <a class="tag" href={`/writing/tags/${tagSlug(tag)}`}>{tag}</a>)}
+          </div>
+        )}
+      </div>
+
+      <div class="post-list">
+        {posts.map((post) => (
+          <a class="post-card" href={postUrl(post)}>
+            <div>
+              <div class="post-kicker">
+                <span>{formatPostDate(post.data.published)}</span>
+                <span>·</span>
+                <span>{readingTime(post.body)} min read</span>
+                {post.data.archive && <><span>·</span><span>Archive</span></>}
+              </div>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+              {post.data.tags.length > 0 && <span class="post-tags">{post.data.tags.join(' · ')}</span>}
+            </div>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
   </section>
 </BaseLayout>
