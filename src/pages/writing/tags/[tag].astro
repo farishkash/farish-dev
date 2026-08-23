@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { formatPostDate, newestFirst, postUrl, readingTime, tagSlug } from '../../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const tags = new Map();
+
+  for (const post of posts) {
+    for (const tag of post.data.tags) {
+      tags.set(tagSlug(tag), tag);
+    }
+  }
+
+  return [...tags.entries()].map(([slug, label]) => ({
+    params: { tag: slug },
+    props: { label },
+  }));
+}
+
+const { label } = Astro.props;
+const posts = (await getCollection('blog', ({ data }) => !data.draft && data.tags.includes(label))).sort(newestFirst);
+---
+
+<BaseLayout title={`${label} — Writing`} description={`Posts by Farish Kashefinejad tagged ${label}.`}>
+  <section class="page page-narrow">
+    <a class="back-link" href="/writing">← All writing</a>
+    <p class="eyebrow">Tag</p>
+    <h1>{label}</h1>
+    <p class="lede">{posts.length} {posts.length === 1 ? 'post' : 'posts'} filed under {label}.</p>
+
+    <div class="section post-list">
+      {posts.map((post) => (
+        <a class="post-card" href={postUrl(post)}>
+          <div>
+            <div class="post-kicker">
+              <span>{formatPostDate(post.data.published)}</span>
+              <span>·</span>
+              <span>{readingTime(post.body)} min read</span>
+            </div>
+            <h3>{post.data.title}</h3>
+            <p>{post.data.description}</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
