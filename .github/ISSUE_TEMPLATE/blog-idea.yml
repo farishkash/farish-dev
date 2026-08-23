@@ -15,6 +15,16 @@ body:
     attributes:
       label: Possible angle
       description: What makes this worth a post rather than a note?
+  - type: dropdown
+    id: category
+    attributes:
+      label: Likely category
+      description: Pick the broadest primary category. This can change later.
+      options:
+        - AI in Practice
+        - Software & Building
+        - Technical Education
+        - Work
   - type: textarea
     id: notes
     attributes:
@@ -24,4 +34,4 @@ body:
     id: tags
     attributes:
       label: Possible tags
-      placeholder: AI, EdTech, Software, Work
+      placeholder: Coding Agents, Developer Tools, Learning, Leadership
