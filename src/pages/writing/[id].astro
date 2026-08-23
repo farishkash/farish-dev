@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { categorySlug } from '../../lib/categories';
 import { formatPostDate, newestFirst, postSlug, postUrl, readingTime, tagSlug } from '../../lib/blog';
 
 export async function getStaticPaths() {
@@ -21,7 +22,9 @@ const related = posts
   .filter((candidate) => candidate.id !== post.id)
   .map((candidate) => ({
     post: candidate,
-    matches: candidate.data.tags.filter((tag) => post.data.tags.includes(tag)).length,
+    matches:
+      candidate.data.tags.filter((tag) => post.data.tags.includes(tag)).length +
+      (candidate.data.category === post.data.category ? 2 : 0),
   }))
   .filter(({ matches }) => matches > 0)
   .sort((a, b) => b.matches - a.matches || newestFirst(a.post, b.post))
@@ -36,6 +39,7 @@ const structuredData = {
   description: post.data.description,
   datePublished: post.data.published.toISOString(),
   dateModified: (post.data.updated ?? post.data.published).toISOString(),
+  articleSection: post.data.category,
   author: {
     '@type': 'Person',
     name: 'Farish Kashefinejad',
@@ -59,6 +63,7 @@ const structuredData = {
     <a class="back-link" href="/writing">← All writing</a>
 
     <header class="article-header">
+      <a class="article-category" href={`/writing/categories/${categorySlug(post.data.category)}`}>{post.data.category}</a>
       <h1>{post.data.title}</h1>
       <p class="article-deck">{post.data.description}</p>
       <div class="post-meta">
@@ -86,6 +91,7 @@ const structuredData = {
           {related.map((item) => (
             <a class="post-card" href={postUrl(item)}>
               <div>
+                <div class="post-kicker">{item.data.category}</div>
                 <h3>{item.data.title}</h3>
                 <p>{item.data.description}</p>
               </div>
