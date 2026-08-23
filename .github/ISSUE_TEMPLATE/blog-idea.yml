@@ -1,0 +1,27 @@
+name: Blog idea
+description: Capture a thought before it turns into a full draft.
+title: "[Post idea] "
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Core idea
+      description: What is the thought, argument, question, or observation?
+      placeholder: The thing I keep coming back to is...
+    validations:
+      required: true
+  - type: textarea
+    id: angle
+    attributes:
+      label: Possible angle
+      description: What makes this worth a post rather than a note?
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and examples
+      description: Stories, examples, links, counterarguments, or fragments to remember.
+  - type: input
+    id: tags
+    attributes:
+      label: Possible tags
+      placeholder: AI, EdTech, Software, Work
