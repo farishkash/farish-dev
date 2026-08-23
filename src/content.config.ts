@@ -10,7 +10,7 @@ const blog = defineCollection({
     published: z.coerce.date(),
     updated: z.coerce.date().optional(),
     draft: z.boolean().default(false),
-    category: z.enum(['AI in Practice', 'Software & Building', 'Technical Education', 'Work']),
+    category: z.enum(['AI in Practice', 'Software & Building', 'Technical Education', 'Work']).default('AI in Practice'),
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
   }),
