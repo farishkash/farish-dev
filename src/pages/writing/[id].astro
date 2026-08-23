@@ -1,0 +1,102 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatPostDate, newestFirst, postSlug, postUrl, readingTime, tagSlug } from '../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+  return posts.map((post) => ({
+    params: { id: postSlug(post) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const minutes = readingTime(post.body);
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(newestFirst);
+const related = posts
+  .filter((candidate) => candidate.id !== post.id)
+  .map((candidate) => ({
+    post: candidate,
+    matches: candidate.data.tags.filter((tag) => post.data.tags.includes(tag)).length,
+  }))
+  .filter(({ matches }) => matches > 0)
+  .sort((a, b) => b.matches - a.matches || newestFirst(a.post, b.post))
+  .slice(0, 3)
+  .map(({ post }) => post);
+
+const canonical = new URL(postUrl(post), Astro.site).toString();
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.published.toISOString(),
+  dateModified: (post.data.updated ?? post.data.published).toISOString(),
+  author: {
+    '@type': 'Person',
+    name: 'Farish Kashefinejad',
+    url: 'https://farish.dev/about',
+  },
+  mainEntityOfPage: canonical,
+  url: canonical,
+  keywords: post.data.tags.join(', '),
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  publishedTime={post.data.published}
+  updatedTime={post.data.updated}
+  tags={post.data.tags}
+>
+  <article class="article page-narrow">
+    <a class="back-link" href="/writing">← All writing</a>
+
+    <header class="article-header">
+      {post.data.archive && <p class="eyebrow">From the archive</p>}
+      <h1>{post.data.title}</h1>
+      <p class="article-deck">{post.data.description}</p>
+      <div class="post-meta">
+        <time datetime={post.data.published.toISOString()}>{formatPostDate(post.data.published)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{minutes} min read</span>
+        {post.data.updated && <><span aria-hidden="true">·</span><span>Updated {formatPostDate(post.data.updated)}</span></>}
+      </div>
+      {post.data.tags.length > 0 && (
+        <div class="tag-list" aria-label="Tags">
+          {post.data.tags.map((tag) => <a class="tag" href={`/writing/tags/${tagSlug(tag)}`}>{tag}</a>)}
+        </div>
+      )}
+    </header>
+
+    <div class="prose article-body">
+      <Content />
+    </div>
+
+    {related.length > 0 && (
+      <aside class="related-posts">
+        <p class="eyebrow">Keep reading</p>
+        <h2>Related thoughts</h2>
+        <div class="post-list compact">
+          {related.map((item) => (
+            <a class="post-card" href={postUrl(item)}>
+              <div>
+                <h3>{item.data.title}</h3>
+                <p>{item.data.description}</p>
+              </div>
+              <span class="post-date">{formatPostDate(item.data.published)}</span>
+            </a>
+          ))}
+        </div>
+      </aside>
+    )}
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+</BaseLayout>
