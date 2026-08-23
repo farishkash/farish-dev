@@ -1,6 +1,6 @@
 {
   "name": "farish-dev",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,8 @@
     "deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
+    "@astrojs/mdx": "^7.0.7",
+    "@astrojs/rss": "^4.0.19",
     "astro": "^7.2.4"
   },
   "devDependencies": {
