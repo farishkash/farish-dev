@@ -117,33 +117,49 @@ The harness determines **how that action actually happens**.
 
 There is no single standards body defining exactly what must be included before something is allowed to call itself an “agent harness.” Different products expose different pieces, and vendors use the term somewhat differently.
 
-But the same responsibilities keep appearing.
+I’m using OpenAI and Anthropic throughout this article because they publish unusually clear descriptions of these systems. The same kinds of responsibilities also show up in frameworks and platforms such as LangGraph, CrewAI, and Google’s Agent Development Kit, even when the terminology or architecture is different.
 
-A harness may manage things like:
+The easiest way to think about the harness is by grouping its responsibilities.
 
-- The instructions given to the agent
-- Which model is being used
-- Which tools the model can see
-- Tool execution
-- Filesystem access
-- Shell or computer access
-- MCP servers and external APIs
-- Conversation and task state
-- Context construction and compaction
-- Memory across turns or sessions
+### Execution
+
+This is the machinery that lets the agent do something outside the model call itself:
+
+- Selecting or invoking the model
+- Deciding which tools the model can see
+- Executing tool calls
+- Providing filesystem, shell, or computer access
+- Connecting MCP servers and external APIs
+- Running code in a sandboxed environment
+
+### Context and state
+
+This is what keeps the agent oriented while the task grows:
+
+- Supplying system, project, and task instructions
+- Tracking conversation and task state
+- Constructing and compacting context
+- Preserving memory across turns or sessions
+
+### Control
+
+This is where the harness decides what the agent is allowed to do and how it recovers when things go wrong:
+
 - Permissions and approval gates
-- Sandboxed execution
 - Retries and error handling
+- Stopping conditions
+
+### Coordination and visibility
+
+This is what makes larger agent systems manageable:
+
 - Subagents and handoffs
 - Model routing
-- Stopping conditions
 - Logging, traces, and observability
 
-That sounds like a lot because it is.
+That is still a lot, but it is easier to see the pattern once the responsibilities are separated.
 
-Once an agent starts doing real work, the quality of the system around the model becomes almost as interesting as the model itself.
-
-OpenAI made that point unusually explicit in September 2026 when it introduced the Agents API. The announcement described the harness as the layer that manages context, uses tools efficiently, coordinates subagents, and supports long-running work with files, code, and intermediate results.
+OpenAI made that pattern unusually explicit in September 2026 when it introduced the Agents API. The announcement described the harness as the layer that manages context, uses tools efficiently, coordinates subagents, and supports long-running work with files, code, and intermediate results.
 
 Anthropic has been writing about the same problem from another direction. Its work on long-running agents focuses heavily on what the harness needs to do when a task outlives a single context window: preserve progress, manage context, leave useful artifacts, and let a future turn or session continue without effectively starting from zero.
 
@@ -169,9 +185,9 @@ A good harness therefore has to decide what the model should see **now**.
 
 That may involve removing stale tool results, summarizing previous work, storing notes outside the active context window, retrieving information only when it becomes relevant, or compacting a long-running session so the agent can continue.
 
-Anthropic calls this broader problem **context engineering** and argues that agent systems need to continuously curate the information available to the model as the agent works. The model may be doing the reasoning, but the quality of that reasoning depends heavily on what the surrounding system puts in front of it.
+Anthropic calls this broader problem **context engineering** and argues that agent systems need to continuously curate the information available to the model as the agent works. The quality of the reasoning depends heavily on what the surrounding system puts in front of it.
 
-This is another reason two products using the same underlying model can behave very differently.
+This is one reason two products using the same underlying model can behave very differently.
 
 They may not be giving that model the same context at all.
 
@@ -277,9 +293,7 @@ The model did not change.
 
 The system around it did.
 
-## Better models do not make the harness irrelevant
-
-There is an interesting tension here.
+## Better models change what the harness should do
 
 As models improve, some harness logic may become unnecessary.
 
@@ -289,33 +303,43 @@ So a good harness is not necessarily the one with the most elaborate orchestrati
 
 Sometimes the best thing you can do is remove machinery the model no longer needs.
 
-But that does not make the harness disappear.
+The interesting design question becomes: **what still needs to be managed outside the model?**
 
-A capable model still needs an execution environment. It still needs tools. It still needs some concept of permissions. Long-running work still needs state. Multi-agent systems still need coordination. Real applications still need observability and control.
+That boundary will keep moving.
 
-The harness may get thinner in some places and smarter in others.
+A newer model may need less prompting scaffolding, fewer explicit planning stages, or less defensive routing. But real work still has external constraints: tools have permissions, files live somewhere, code needs an execution environment, long tasks need state, and multi-agent work needs coordination.
 
-What changes is where we draw the boundary between what the model can handle itself and what the surrounding system needs to manage.
+The harness has to evolve with the model instead of freezing assumptions about what the model can and cannot handle.
 
-## The model is not the agent
+## When the harness fails, the agent can look stupid
 
-This is the point I keep coming back to.
+This is the part that makes the distinction practical rather than academic.
 
-When an agent successfully works through a large task, it is tempting to attribute everything we just watched to the model.
+Imagine an agent that keeps trying to call the wrong tool because the tool descriptions overlap. Or one that forgets the acceptance criteria after context compaction. Or one that correctly identifies a fix but cannot apply it because the permission boundary is wrong. Or a long-running task that loses its intermediate state and starts solving the same problem again from scratch.
 
-But the model is one part of a larger system.
+Those failures can look like model failures from the outside.
 
-The model reasons.
+Sometimes they are.
 
-The harness gives it an environment in which that reasoning can matter.
+But sometimes the model made a perfectly reasonable decision with a bad set of tools, incomplete context, or an execution environment that could not carry the decision through.
 
-It supplies tools, executes actions, manages context, preserves state, enforces boundaries, coordinates other agents, and keeps the loop moving until the task is finished or something tells it to stop.
+That changes how I evaluate agentic systems.
 
-So the next time someone says two agent products should behave the same because they use the same model, I would look at what is wrapped around that model before drawing the conclusion.
+Instead of asking only, **Which model is this using?** I also want to know:
 
-Because the model may be the brain.
+- What tools does the harness expose?
+- What context does it preserve?
+- What does it forget?
+- What can it actually execute?
+- Where are the approval boundaries?
+- How does it recover from failure?
+- How does it coordinate another agent when the task needs one?
 
-**But the harness is what gives the agent hands, memory, a workspace, and somewhere to go.**
+Those questions tell you much more about the agent you are actually using.
+
+The model still matters enormously.
+
+But if you want to understand why an agent succeeds, stalls, or goes completely off the rails, you also have to look at the harness around it.
 
 ## Further reading
 
@@ -325,3 +349,4 @@ Because the model may be the brain.
 - [Anthropic: Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)
 - [Anthropic: Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+- [Anthropic: Writing effective tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents)
