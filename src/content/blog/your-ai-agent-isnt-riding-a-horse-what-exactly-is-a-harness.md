@@ -3,7 +3,7 @@ title: "Your AI Agent Isn’t Riding a Horse: What Exactly Is a Harness?"
 description: "The model is only part of an AI agent. The harness is the system around it that manages tools, context, permissions, memory, subagents, and the loop that turns reasoning into action."
 published: 2026-09-15
 updated: 2026-09-15
-draft: true
+draft: false
 category: AI in Practice
 tags:
   - Agentic AI
