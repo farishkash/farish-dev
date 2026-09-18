@@ -1,8 +1,8 @@
 ---
 title: "Your AI Agent Isn’t Riding a Horse: What Exactly Is a Harness?"
-description: "The model is only part of an AI agent. The harness is the system around it that manages tools, context, permissions, memory, subagents, and the loop that turns reasoning into action."
+description: "The model is only part of an AI agent. The harness is the control layer around it that manages tools, context, and agent behavior, while the wider environment provides the infrastructure that lets the work actually happen."
 published: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-18
 draft: false
 category: AI in Practice
 tags:
@@ -21,9 +21,19 @@ Everyone seems to know what it means right up until someone asks them to define 
 
 And no, your AI agent isn’t riding a horse.
 
+The name actually makes more sense than it sounds. A horse harness doesn’t provide the horse’s strength or decide where it wants to go. It connects that strength to something useful and gives you a way to direct it.
+
+An agent harness does something surprisingly similar.
+
+Except with fewer horses. Usually.
+
 The short version is this:
 
-**The model provides the reasoning. The harness is the system around the model that lets that reasoning become action.**
+**The model provides the reasoning. The harness helps turn that reasoning into controlled action.**
+
+That wording is deliberately a little broad because “harness” does not have one universally agreed boundary. Birgitta Böckeler notes that the term is sometimes used broadly enough to mean essentially everything in an agent except the model. Anthropic’s [Managed Agents architecture](https://www.anthropic.com/engineering/managed-agents), by contrast, uses it more narrowly for the loop that calls the model and routes tool calls, while treating the sandbox and durable session state as separate components.
+
+So when I use “harness” in this article, I’m mostly talking about the control layer around the model, while recognizing that people sometimes use the word for the wider agent environment too.
 
 That distinction matters because we have a tendency to talk about the model as though it is the entire agent.
 
@@ -68,7 +78,9 @@ Model decides what to do
   ↓
 Tool call
   ↓
-Harness executes the tool
+Harness routes the tool call
+  ↓
+Environment executes it
   ↓
 Result returns to the model
   ↓
@@ -117,9 +129,9 @@ The harness determines **how that action actually happens**.
 
 There is no single standards body defining exactly what must be included before something is allowed to call itself an “agent harness.” Different products expose different pieces, and vendors use the term somewhat differently.
 
-I’m using OpenAI and Anthropic throughout this article because they publish unusually clear descriptions of these systems. The same kinds of responsibilities also show up in frameworks and platforms such as LangGraph, CrewAI, and Google’s Agent Development Kit, even when the terminology or architecture is different.
+I’m using OpenAI and Anthropic throughout this article because they publish unusually clear descriptions of these systems.
 
-The easiest way to think about the harness is by grouping its responsibilities.
+Because the boundary varies, the easiest way to think about the broader agent environment is by grouping the responsibilities that the harness coordinates with.
 
 ### Execution
 
@@ -128,9 +140,9 @@ This is the machinery that lets the agent do something outside the model call it
 - Selecting or invoking the model
 - Deciding which tools the model can see
 - Executing tool calls
-- Providing filesystem, shell, or computer access
+- Routing requests to filesystem, shell, computer, or other tools
 - Connecting MCP servers and external APIs
-- Running code in a sandboxed environment
+- Coordinating with sandboxed execution environments
 
 ### Context and state
 
@@ -159,7 +171,7 @@ This is what makes larger agent systems manageable:
 
 That is still a lot, but it is easier to see the pattern once the responsibilities are separated.
 
-OpenAI made that pattern unusually explicit in September 2026 when it introduced the Agents API. The announcement described the harness as the layer that manages context, uses tools efficiently, coordinates subagents, and supports long-running work with files, code, and intermediate results.
+OpenAI made that pattern unusually explicit in September 2026 when it introduced the Agents API. The announcement separates the harness, which manages context, tools, and subagents, from the infrastructure and environment that support long-running work with files, code, and intermediate results.
 
 Anthropic has been writing about the same problem from another direction. Its work on long-running agents focuses heavily on what the harness needs to do when a task outlives a single context window: preserve progress, manage context, leave useful artifacts, and let a future turn or session continue without effectively starting from zero.
 
@@ -167,7 +179,7 @@ This is why I think “harness” is a useful term.
 
 It reminds us that an agent is a system, not just a model name.
 
-## Context management is part of the harness too
+## Context management overlaps with the harness
 
 Tools get most of the attention because they are easy to see.
 
@@ -185,7 +197,7 @@ A good harness therefore has to decide what the model should see **now**.
 
 That may involve removing stale tool results, summarizing previous work, storing notes outside the active context window, retrieving information only when it becomes relevant, or compacting a long-running session so the agent can continue.
 
-Anthropic calls this broader problem **context engineering** and argues that agent systems need to continuously curate the information available to the model as the agent works. The quality of the reasoning depends heavily on what the surrounding system puts in front of it.
+Anthropic calls this broader problem **context engineering** and argues that agent systems need to continuously curate the information available to the model as the agent works. Böckeler describes harness engineering for coding-agent users as one form of that broader discipline. The exact nesting depends on whose terminology you use, but the practical point is the same: the quality of the reasoning depends heavily on what the surrounding system puts in front of it.
 
 This is one reason two products using the same underlying model can behave very differently.
 
@@ -195,17 +207,17 @@ They may not be giving that model the same context at all.
 
 This distinction is important because the two terms can sound interchangeable.
 
-The **workflow** describes how you want the work to happen.
+I’m using **workflow** here in the ordinary engineering sense of how I’ve structured the work. Anthropic uses the word more narrowly in *Building Effective Agents* for predefined code paths, as distinct from agents that dynamically direct their own process.
 
-The **harness** provides the machinery that allows the work to happen.
+In that broader everyday sense, the workflow describes how you want the work to happen, while the harness provides the control machinery that helps make it happen.
 
 For example, in [my previous post about model routing](/writing/stop-using-your-best-coding-model-for-everything), I described a pattern where I might use:
 
 ```text
-Sol → planning and architecture
-Luna → bounded implementation
-Terra → a fresh debugging perspective
-Sol → architectural escalation and final review
+Higher-capability model → planning and architecture
+Faster model → bounded implementation
+Fresh model/context → a different debugging perspective
+Higher-capability model → architectural escalation and final review
 ```
 
 That is a workflow and routing strategy.
@@ -279,7 +291,7 @@ Model
 = the experience you actually get
 ```
 
-Change enough of those pieces and the same underlying model can feel like a completely different product.
+Change enough of those pieces and even the same underlying model, or closely related variants of it, can feel like a completely different product. The model still sets important capability limits, and vendors often evolve models and harnesses together.
 
 One harness may give the model excellent repository search and a clean representation of the codebase. Another may flood the context with irrelevant files.
 
@@ -289,9 +301,7 @@ One may expose five clearly differentiated tools. Another may expose fifty overl
 
 One may let an agent test its own work in an isolated environment. Another may only let it suggest code changes.
 
-The model did not change.
-
-The system around it did.
+Even when the underlying model does not change, the system around it can change the experience dramatically.
 
 ## Better models change what the harness should do
 
@@ -350,3 +360,4 @@ But if you want to understand why an agent succeeds, stalls, or goes completely 
 - [Anthropic: Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Anthropic: Writing effective tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents)
+- [Anthropic: Managed Agents](https://www.anthropic.com/engineering/managed-agents)
