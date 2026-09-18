@@ -2,6 +2,7 @@
 title: "So You Built an Agent Harness. Now You Have to Engineer It."
 description: "When an AI agent keeps failing, the model may not be the problem. Harness engineering means designing the guidance, feedback, context, and environment that help agents succeed."
 published: 2026-09-18
+updated: 2026-09-18
 draft: false
 category: AI in Practice
 tags:
@@ -32,7 +33,7 @@ Maybe the environment you've built around it is.
 
 ## From agent harnesses to harness engineering
 
-In my previous article, [Your AI Agent Isn’t Riding a Horse: What Exactly Is a Harness?](/writing/your-ai-agent-isnt-riding-a-horse-what-exactly-is-a-harness), I talked about the **agent harness**: the system around an AI model that manages things like tools, context, permissions, memory, subagents, and the loop that turns reasoning into action.
+In my previous article, [Your AI Agent Isn’t Riding a Horse: What Exactly Is a Harness?](/writing/your-ai-agent-isnt-riding-a-horse-what-exactly-is-a-harness), I talked about the **agent harness**: the control layer around an AI model that manages the loop between reasoning and action, including context, tools, and subagents. Depending on whose terminology you use, some of the surrounding execution environment may be described as part of the harness or as separate infrastructure.
 
 The harness is what turns a model that can generate a response into a system that can actually do things.
 
@@ -80,7 +81,7 @@ Another requires better tooling.
 
 Another requires better validation.
 
-Changing the model might improve the result, but it doesn't fix the underlying system.
+Changing the model might improve the result, and better models can sometimes eliminate the need for old scaffolding. But if the underlying problem is missing tooling, feedback, or context, a model swap alone doesn't repair that environment.
 
 This is why I increasingly find it useful to think about an AI agent as more than the model sitting in the middle of it.
 
@@ -92,7 +93,7 @@ But so is everything surrounding it.
 
 One useful framework comes from Birgitta Böckeler's [Harness Engineering](https://martinfowler.com/articles/harness-engineering.html) article on Martin Fowler's site. She separates harness controls into **guides**, which provide feedforward before the agent acts, and **sensors**, which provide feedback after it acts.
 
-Guides can include system instructions, AGENTS.md or CLAUDE.md files, tool descriptions, examples, project documentation, business rules, permissions, schemas, and relevant context.
+Böckeler's coding-agent examples include things such as AGENTS.md files, skills, scripts, and documentation. Extending the same feedforward idea to other agent systems, guides can also include system instructions, tool descriptions, examples, business rules, permissions, schemas, and relevant context.
 
 The goal isn't simply to give the agent more instructions.
 
@@ -142,7 +143,7 @@ Agents need signals too.
 
 That's where **sensors** come in.
 
-Tests, linters, validators, evals, schema checks, visual inspection, API responses, business-rule validation, and other feedback mechanisms can all tell an agent whether what it just did actually worked.
+Böckeler points to computational sensors such as tests, linters, and static analysis, as well as less deterministic feedback such as logs and agent-based review. Extending that idea, validators, evals, schema checks, visual inspection, API responses, and business-rule validation can all help an agent determine whether what it just did actually worked.
 
 Böckeler's framework makes the relationship between guides and sensors especially useful: guidance increases the chance of getting something right before the action, while feedback gives the agent a chance to recognize and correct a bad result afterward.
 
@@ -158,25 +159,25 @@ You make your changes, stare at the code, and say:
 
 That's essentially what we're asking an agent to do when we give it the ability to act but no meaningful way to inspect the consequences.
 
-## The loop matters
+And simply having a sensor isn't enough. Feedback can be incomplete, misleading, or too forgiving. Anthropic's long-running-agent work is a useful example: agents could run unit tests and other checks and still mark work complete without adequate end-to-end verification. The feedback mechanisms themselves need scrutiny.
+
+## The agent's runtime loop matters
 
 This is where the harness starts becoming more than a collection of tools and instructions.
 
 It becomes a loop.
 
 ```text
-Guidance → Action → Observation → Feedback → Adjustment
+Guidance → Action → Feedback → Adjustment
 ```
 
 The agent gets enough information to make a decision.
 
 It acts.
 
-The environment tells it what happened.
+The environment returns a signal about what happened.
 
-The agent evaluates that result.
-
-Then it adjusts.
+The agent evaluates that feedback and adjusts.
 
 That loop is incredibly important because real tasks rarely happen perfectly on the first attempt.
 
@@ -224,9 +225,11 @@ More context isn't automatically better.
 
 **Useful context, delivered when it's needed, is better.**
 
-That's harness engineering too.
+That makes context engineering closely intertwined with harness engineering, even if different authors draw the boundary between the two differently.
 
 ## Your agent's failures are data
+
+The runtime loop is what the agent does while working. There is another loop happening outside it: the engineer's **steering loop**. Böckeler uses that idea for the process of observing failures and adjusting the harness in response.
 
 This is where I think harness engineering becomes particularly useful.
 
@@ -270,7 +273,7 @@ Examples matter.
 
 Good system prompts matter.
 
-But prompts have become the default place we try to solve almost every AI problem.
+But prompts are often the first place we try to solve an AI problem.
 
 Agent chose the wrong tool?
 
@@ -324,7 +327,7 @@ Enough information to understand the system?
 
 Not even close.
 
-Two teams can use the exact same model and build agents with dramatically different capabilities.
+Two teams can use the same underlying model and build agent systems that behave dramatically differently. Anthropic's long-running application experiments provide a concrete example: changing the harness architecture around the model substantially changed what the system could accomplish.
 
 One may constantly get lost, call the wrong tools, burn through context, and confidently declare broken work complete.
 
@@ -334,15 +337,19 @@ The difference isn't necessarily intelligence inside the model.
 
 It may be what was engineered around it.
 
-OpenAI's September 2026 [Agents API announcement](https://openai.com/index/introducing-the-agents-api/) makes that separation explicit: useful agents need infrastructure around the model to manage context, tools, subagents, files, code, intermediate results, and long-running work.
+OpenAI's September 2026 [Agents API announcement](https://openai.com/index/introducing-the-agents-api/) draws a useful distinction: the harness manages context, tools, and subagents, while the surrounding infrastructure and environment support files, code, intermediate results, and reliable long-running work.
 
 And that's why harness engineering matters.
 
 The next generation of AI systems won't improve only because the models get smarter.
 
-They'll improve because we're getting better at building environments that allow those models to use their capabilities effectively.
+They'll also improve because we're getting better at building environments that allow those models to use their capabilities effectively.
 
-In the previous article, I joked about the term "agent harness" because, despite the name, nobody is strapping a saddle onto Claude.
+The model still sets important limits on what the system can do. And harness engineering isn't about endlessly adding scaffolding. Anthropic's experiments show the opposite can be true: as models improve, assumptions encoded in the harness can go stale, and components that once helped may become unnecessary or even get in the way.
+
+A good harness should evolve when the agent fails, but it should also be simplified when the model no longer needs the support.
+
+In the previous article, I joked that an agent harness is a bit like the horse version: it doesn’t provide the intelligence or strength, but it helps direct that capability toward useful work. Except with fewer horses. Usually.
 
 But maybe the horse metaphor isn't completely useless after all.
 
@@ -358,4 +365,3 @@ But maybe the horse metaphor isn't completely useless after all.
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
 - [Anthropic: Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
-- [Atlan: What Is Harness Engineering?](https://atlan.com/know/what-is-harness-engineering/)
