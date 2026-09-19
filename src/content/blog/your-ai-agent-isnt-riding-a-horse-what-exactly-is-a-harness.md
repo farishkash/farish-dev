@@ -31,7 +31,7 @@ The short version is this:
 
 **The model provides the reasoning. The harness helps turn that reasoning into controlled action.**
 
-That wording is deliberately a little broad because “harness” does not have one universally agreed boundary. Birgitta Böckeler notes that the term is sometimes used broadly enough to mean essentially everything in an agent except the model. Anthropic’s [Managed Agents architecture](https://www.anthropic.com/engineering/managed-agents), by contrast, uses it more narrowly for the loop that calls the model and routes tool calls, while treating the sandbox and durable session state as separate components.
+That wording is deliberately a little broad because “harness” does not have one universally agreed boundary. Birgitta Böckeler notes that the term is sometimes used broadly enough to mean essentially everything in an agent except the model. Anthropic itself has used the term at different levels of abstraction. Its earlier work on long-running agents uses “harness” more broadly, while its [Managed Agents architecture](https://www.anthropic.com/engineering/managed-agents) uses it more narrowly for the loop that calls the model and routes tool calls, treating the sandbox and durable session state as separate components.
 
 So when I use “harness” in this article, I’m mostly talking about the control layer around the model, while recognizing that people sometimes use the word for the wider agent environment too.
 
@@ -43,7 +43,7 @@ But the model itself is not opening files, launching a shell, keeping a task ali
 
 Something around the model has to make all of that possible.
 
-That something is the harness.
+That something is the harness **and the environment it coordinates with**.
 
 ## Start with a model by itself
 
@@ -125,7 +125,7 @@ The model says **what it wants to do**.
 
 The harness determines **how that action actually happens**.
 
-## So what lives inside a harness?
+## What does the harness coordinate?
 
 There is no single standards body defining exactly what must be included before something is allowed to call itself an “agent harness.” Different products expose different pieces, and vendors use the term somewhat differently.
 
@@ -139,7 +139,7 @@ This is the machinery that lets the agent do something outside the model call it
 
 - Selecting or invoking the model
 - Deciding which tools the model can see
-- Executing tool calls
+- Routing tool calls to the appropriate execution environment
 - Routing requests to filesystem, shell, computer, or other tools
 - Connecting MCP servers and external APIs
 - Coordinating with sandboxed execution environments
@@ -251,7 +251,7 @@ That implementation detail is harness behavior.
 
 The model may decide delegation is useful.
 
-The harness is what makes delegation executable.
+The harness and its surrounding environment are what make delegation executable.
 
 And this is where the idea from my last post gets more interesting. Model routing does not have to mean I manually stop one chat, open another, paste in the context, and tell a different model to continue.
 
@@ -361,3 +361,4 @@ But if you want to understand why an agent succeeds, stalls, or goes completely 
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Anthropic: Writing effective tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents)
 - [Anthropic: Managed Agents](https://www.anthropic.com/engineering/managed-agents)
+- [Birgitta Böckeler / Martin Fowler: Harness engineering for coding agent users](https://martinfowler.com/articles/harness-engineering.html)
