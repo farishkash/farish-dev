@@ -95,7 +95,7 @@ The loop sounds simple.
 
 Making that loop useful, safe, and reliable is where the harness comes in.
 
-## The model can ask for a tool. The harness actually makes it happen.
+## The model can ask for a tool. The harness routes the request.
 
 This is one of the easiest parts to misunderstand.
 
@@ -139,8 +139,7 @@ This is the machinery that lets the agent do something outside the model call it
 
 - Selecting or invoking the model
 - Deciding which tools the model can see
-- Routing tool calls to the appropriate execution environment
-- Routing requests to filesystem, shell, computer, or other tools
+- Routing tool calls to filesystem, shell, computer, or other execution environments
 - Connecting MCP servers and external APIs
 - Coordinating with sandboxed execution environments
 
@@ -307,7 +306,7 @@ Even when the underlying model does not change, the system around it can change 
 
 As models improve, some harness logic may become unnecessary.
 
-Anthropic has written about this directly: harnesses often encode assumptions about what a model cannot do, and those assumptions can become stale as models improve. A workaround that was necessary for one generation of models may become actively unhelpful for the next.
+Anthropic has written about this directly: harnesses often encode assumptions about what a model cannot do, and those assumptions can become stale as models improve. A workaround that was necessary for one generation of models may become unnecessary for the next.
 
 So a good harness is not necessarily the one with the most elaborate orchestration.
 
