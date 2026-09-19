@@ -351,7 +351,7 @@ A good harness should evolve when the agent fails, but it should also be simplif
 
 In the previous article, I opened by noting that your AI agent isn't literally riding a horse.
 
-But maybe the horse metaphor isn't completely useless after all.
+It turns out the horse metaphor holds up better than the opening joke suggests.
 
 **The harness doesn't make the horse smarter.**
 
