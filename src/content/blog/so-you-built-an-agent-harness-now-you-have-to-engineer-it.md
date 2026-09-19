@@ -143,7 +143,7 @@ Agents need signals too.
 
 That's where **sensors** come in.
 
-Böckeler points to computational sensors such as tests, linters, and static analysis, as well as less deterministic feedback such as logs and agent-based review. Extending that idea, validators, evals, schema checks, visual inspection, API responses, and business-rule validation can all help an agent determine whether what it just did actually worked.
+Böckeler points to computational sensors such as tests, linters, static analysis, and logs, as well as more inferential feedback such as agent-based review. Extending that idea, validators, evals, schema checks, visual inspection, API responses, and business-rule validation can all help an agent determine whether what it just did actually worked.
 
 Böckeler's framework makes the relationship between guides and sensors especially useful: guidance increases the chance of getting something right before the action, while feedback gives the agent a chance to recognize and correct a bad result afterward.
 
@@ -345,11 +345,11 @@ The next generation of AI systems won't improve only because the models get smar
 
 They'll also improve because we're getting better at building environments that allow those models to use their capabilities effectively.
 
-The model still sets important limits on what the system can do. And harness engineering isn't about endlessly adding scaffolding. Anthropic's experiments show the opposite can be true: as models improve, assumptions encoded in the harness can go stale, and components that once helped may become unnecessary or even get in the way.
+The model still sets important limits on what the system can do. And harness engineering isn't about endlessly adding scaffolding. Anthropic's experiments show the opposite can be true: as models improve, assumptions encoded in the harness can go stale, and components that once helped may become unnecessary.
 
 A good harness should evolve when the agent fails, but it should also be simplified when the model no longer needs the support.
 
-In the previous article, I joked that an agent harness is a bit like the horse version: it doesn’t provide the intelligence or strength, but it helps direct that capability toward useful work. Except with fewer horses. Usually.
+In the previous article, I opened by noting that your AI agent isn't literally riding a horse.
 
 But maybe the horse metaphor isn't completely useless after all.
 
@@ -361,7 +361,7 @@ But maybe the horse metaphor isn't completely useless after all.
 
 - [OpenAI: Harness engineering](https://openai.com/index/harness-engineering/)
 - [OpenAI: Introducing the Agents API](https://openai.com/index/introducing-the-agents-api/)
-- [Birgitta Böckeler / Martin Fowler: Harness Engineering](https://martinfowler.com/articles/harness-engineering.html)
+- [Birgitta Böckeler / Martin Fowler: Harness engineering for coding agent users](https://martinfowler.com/articles/harness-engineering.html)
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
 - [Anthropic: Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
