@@ -35,7 +35,7 @@ const nav = [
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0c1118" />
@@ -58,24 +58,35 @@ const nav = [
     <title>{pageTitle}</title>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="site-shell">
       <header class="site-header">
         <a class="brand" href="/" aria-label="Farish Kashefinejad home">farish<span>.dev</span></a>
         <nav aria-label="Primary navigation">
-          {nav.map((item) => (
-            <a class:list={[{ active: Astro.url.pathname === item.href || (item.href !== '/' && Astro.url.pathname.startsWith(item.href)) }]} href={item.href}>{item.label}</a>
-          ))}
+          {nav.map((item) => {
+            const active = Astro.url.pathname === item.href || (item.href !== '/' && Astro.url.pathname.startsWith(item.href));
+            return (
+              <a
+                class:list={[{ active }]}
+                href={item.href}
+                aria-current={active ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
       </header>
-      <main>
+      <main id="main-content" tabindex="-1">
         <slot />
       </main>
       <footer class="site-footer">
         <p>© {year} Farish Kashefinejad</p>
-        <div>
+        <nav aria-label="Footer navigation">
+          <a href="/accessibility">Accessibility</a>
           <a href="/rss.xml">RSS</a>
           <a href="https://www.linkedin.com/in/farishkash/" rel="me">LinkedIn</a>
-        </div>
+        </nav>
       </footer>
     </div>
   </body>
