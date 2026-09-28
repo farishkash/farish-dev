@@ -10,6 +10,7 @@ export async function GET() {
     '/',
     '/work',
     '/about',
+    '/accessibility',
     '/writing',
     ...posts.map((post) => postUrl(post)),
     ...BLOG_CATEGORIES.map((category) => `/writing/categories/${category.slug}`),
