@@ -398,9 +398,9 @@ There is an important counterweight here.
 
 One successful adversarial demonstration does not mean the reviewer is broadly ineffective.
 
-OpenAI reports **99.3% recall** on its synthetic prompt-injection evaluation, **90.3% recall** on its overeagerness evaluation, and **96.1% recall** on MonitoringBench.
+OpenAI reports **99.3% recall** on its synthetic prompt-injection evaluation across remote code execution, secret exfiltration, and external upload attacks, **90.3% recall** on its overeagerness evaluation, and **96.1% recall** on MonitoringBench. OpenAI also notes that the prompt-injection figure drops to **90.2%** when destructive deletion and data-tampering cases are included, largely because some missed cases were judged not serious enough to warrant escalation.
 
-Those are strong numbers.
+Those are still strong numbers.
 
 They also make the PromptArmor example more useful, not less.
 
@@ -432,31 +432,23 @@ This is where the "use a decision model when you know the choices" rule needs an
 
 ## An even safer pattern: escalate, but never loosen
 
-There is a real Jev integration that takes this idea in an interesting direction.
+There is a community Jev integration that takes this idea in an interesting direction.
 
-The open-source [jevwire project](https://github.com/Brainwires/jevwire) integrates Jev into Claude Code as an **escalate-only** layer.
+The independent, early-stage [jevwire project](https://github.com/Brainwires/jevwire) integrates Jev into Claude Code as an **escalate-only** layer.
 
 Jev is allowed to make the system stricter, but not looser.
 
-It can raise a warning.
+It can deny an action, and if `ask_on_trip` is enabled, that denial can be turned into a human approval prompt. By default, though, jevwire does not prompt the user directly. Its notes and denials are addressed back to Claude.
 
-It can deny an action.
+And it still is not a security boundary.
 
-It can ask for human approval.
+A tripped action can be re-issued by the agent with a `# jev:intended <reason>` marker and pass without a second Jev judgment. Notes also arrive after the tool call has already run, so they cannot stop the action retroactively.
 
-But it cannot grant permission.
+That makes the design safer in one specific sense: Jev cannot loosen an existing permission policy. But enforcement still belongs to deterministic rules and the underlying permission system.
 
-That restriction is intentional. The project does not treat Jev as injection-hardened, so it does not let the model weaken an existing deterministic policy.
+The project describes this philosophy as **"code before model."** Deterministic prefilters run first, and Jev is used only for the fuzzy cases left over.
 
-The design also follows a principle I keep coming back to throughout this article:
-
-**Code before model.**
-
-Deterministic prefilters run first.
-
-Jev is used only for the fuzzy cases left over.
-
-That is a much stronger architecture than handing every action to a probabilistic model and treating its answer as policy.
+That is a useful pattern, but not a guarantee.
 
 ## Risk gating is only one place this could matter
 
@@ -693,4 +685,4 @@ And when the answer is yes:
 - [LangChain: How to Build a Model Router in the Harness](https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness)
 - [LangChain: Building Production Agents with Jev and LangGraph](https://www.langchain.com/blog/building-prod-with-jev-and-langgraph)
 - [jevwire GitHub repository](https://github.com/Brainwires/jevwire)
-- [TypeSafe API documentation](https://api.typesafe.ai/docs)
+- [TypeSafe API documentation](https://docs.typesafe.ai/api)
